@@ -1,0 +1,248 @@
+/ AvlTree.cpp : Defines the entry point for the console application.
+//
+
+#include "stdafx.h"
+#include <iostream>
+#include<string>
+using namespace std;
+class Node
+{
+public:	int data;
+		Node *leftchild, *rchild;
+		int height;
+		//int b;
+		Node(int x)
+		{
+			data = x;
+			leftchild, rchild = NULL;
+			height = 1;
+			
+			
+		}
+};
+class AvlTree
+{
+public:
+	Node *root;
+	int Height(Node *node)
+	{
+		if (node==NULL)
+		{
+			return 0;
+
+		}
+		else
+		{
+			return	node->height;
+		}
+	
+	
+	}
+	int Max(int a, int b)
+	{
+		return (a > b) ? a : b;
+	
+	}
+	int BalFactor(Node *node)
+	{
+		return (Height(node->leftchild) - Height(node->rchild));
+	}
+	Node * LLRotate(Node * node)
+	{
+		Node* nodelchild=node->leftchild;
+		Node* nodelchildrchild=node->leftchild->rchild;
+		nodelchild->rchild = node;
+		nodelchild->rchild->leftchild = nodelchildrchild;
+		node->height = 1 + Max(Height(node->leftchild), Height(node->rchild));
+		nodelchild->height= 1 + Max(Height(nodelchild->leftchild), Height(nodelchild->rchild));
+
+		
+		if (root==node)
+		{
+			//cout << "llrm ";
+			root = nodelchild;
+			//cout << " llr m root " << root->data;
+			return root;
+		}
+		
+		return nodelchild;
+
+	
+	}
+	Node* RRRotate(Node* node)
+	{
+		Node* nodeRchild = node->rchild;
+		Node* noderchildlchild = node->rchild->leftchild;
+		nodeRchild->leftchild = node;
+		nodeRchild->leftchild->rchild = noderchildlchild;
+		node->height = 1 + Max(Height(node->leftchild), Height(node->rchild));
+		nodeRchild->height = 1 + Max(Height(nodeRchild->leftchild), Height(nodeRchild->rchild));
+
+
+		if (root == node)
+		{
+			//cout << "llrm ";
+			root = nodeRchild;
+			//cout << " llr m root " << root->data;
+			return root;
+		}
+
+		else
+		{return nodeRchild;}
+
+
+	}
+	Node* LRRotate(Node* node)
+	{
+		Node*nodeLRC = node->leftchild->rchild;
+		Node* nodeLRLC = nodeLRC->leftchild;
+		Node* nodeLRRC = nodeLRC->rchild;
+		nodeLRC->leftchild = node->leftchild;
+		nodeLRC->rchild = node;
+		nodeLRC->leftchild->rchild = nodeLRLC;
+		node->leftchild = nodeLRRC;
+		node->height = 1 + Max(Height(node->leftchild), Height(node->rchild));
+		nodeLRC->leftchild->height = 1 + Max(Height(nodeLRC->leftchild->leftchild), Height(nodeLRC->rchild->rchild));
+		nodeLRC->height = 1 + Max(Height(nodeLRC->leftchild), Height(nodeLRC->rchild));
+
+
+		if (root == node)
+		{
+			root = nodeLRC;
+			return root;
+		}
+		else { return nodeLRC; }
+  
+	}
+	Node* RLRotate(Node* node)
+	{
+		Node*nodeRLC = node->rchild->leftchild;
+		Node* nodeRLLC = nodeRLC->leftchild;
+		Node* nodeRLRC = nodeRLC->rchild;
+		nodeRLC->leftchild = node;
+		nodeRLC->rchild = node->rchild;
+		node->rchild = nodeRLLC;
+		nodeRLC->rchild->leftchild = nodeRLRC;
+		node->height = 1 + Max(Height(node->leftchild), Height(node->rchild));
+		nodeRLC->rchild->height = 1 + Max(Height(nodeRLC->rchild->leftchild), Height(nodeRLC->rchild->rchild));
+		nodeRLC->height = 1 + Max(Height(nodeRLC->leftchild), Height(nodeRLC->rchild));
+		if (root==node)
+		{
+			root = nodeRLC;
+			return root;
+		}
+		else { return nodeRLC; }
+	
+	}
+	
+	Node *Insert (Node *p,int data)
+	{
+		Node *temp;
+		if (p==NULL)
+		{
+			temp = new Node(data);
+		//	root = p;
+			return temp;
+			
+		}
+		else
+		{
+			if (p->data<data)
+			{
+				//t = new Node(data);
+				p->rchild = Insert(p->rchild, data);
+				p->height = 1 + Max(Height(p->leftchild), Height(p->rchild));
+				if (BalFactor(p) == 2 && BalFactor(p->leftchild) == 1)
+				{
+					return LLRotate(p);
+				}
+				else if (BalFactor(p)==-2&&BalFactor(p->rchild)==-1)
+				{
+					return RRRotate(p);
+
+				}
+				else if (BalFactor(p)==2&&BalFactor(p->leftchild)==-1)
+				{
+					return LRRotate(p);
+				}
+				else if (BalFactor(p)==-2&&BalFactor(p->rchild)==1)
+				{
+					return RLRotate(p);
+				}
+				
+			
+				return p;
+				
+				
+			}
+			else if (p->data>data)
+			{
+				// = new Node(data);
+				p->leftchild = Insert(p->leftchild, data);
+				p->height = 1 +Max(Height(p->leftchild),Height(p->rchild));
+				if (BalFactor(p) ==2 && BalFactor(p->leftchild) == 1)
+				{
+					return LLRotate(p);
+				}
+			
+				else if (BalFactor(p) == -2 && BalFactor(p->rchild) == -1)
+				{
+					return RRRotate(p);
+
+				}
+				else if (BalFactor(p) == 2 && BalFactor(p->leftchild) == -1)
+				{
+					return LRRotate(p);
+				}
+				else if (BalFactor(p) == -2 && BalFactor(p->rchild) == 1)
+				{
+					return RLRotate(p);
+				}
+				
+				return p;
+			}
+			else
+			{
+				return NULL;
+			} 
+
+		}
+	
+	}
+	void Inorder(Node *node)
+	{
+		
+		if (node!=NULL)
+		{
+			Inorder(node->leftchild);
+			cout << node->data << " ";
+			cout <<" height"<< node->height << " ";
+			
+
+			Inorder(node->rchild);
+          
+		}
+	
+	}
+
+};
+
+
+int main()
+{
+	AvlTree* av=new AvlTree();
+	Node *root = NULL;
+root=av->Insert(root, 10);
+root = av->Insert(root, 20);
+root = av->Insert(root, 30);
+root = av->Insert(root, 25);
+root = av->Insert(root, 28);
+root = av->Insert(root, 27);
+root = av->Insert(root, 5);
+
+
+av->Inorder(root);
+int x = 0;
+cin >> x;
+return 0;
+}
